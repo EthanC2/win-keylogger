@@ -1,55 +1,75 @@
+//For KeyboardListener
+use windows::Win32::UI::Input::KeyboardAndMouse::{GetKeyboardState, GetAsyncKeyState, VkKeyScanA};
+
+//For KeyboardReadError
 use std::fmt::{Debug, Display};
 use windows::Win32::Foundation::{GetLastError};
-use windows::Win32::UI::Input::KeyboardAndMouse::{GetKeyboardState, ToUnicode};
 
 /*
-    Keylogger. Used for retrieving keystrokes from the 
-    kernal via Win32 API calls.
-*/
-pub struct KeyLogger;
+    Keyboard listener. Used for retrieving keystrokes 
+    from the kernal via Win32 API calls.
 
-impl KeyLogger {
-    /*
-        "Copies the status of the 256 virtual keys to the specified buffer"
-        What are virtual keys?: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-        
-        'windows::GetKeyboardState()' Notes
-        ===========================================
-        @parameter 'lpKeyState': a 256-byte array that receives the status of the 256 virtual keys
-        @return_value: if the function succeeds, the return value is non-zero.
-    */
+    Important notes:
+    ================
+    - Difference between GetKeyState() and GetKeyStateAsync(): https://stackoverflow.com/questions/17770753/getkeystate-vs-getasynckeystate-vs-getch
+        > For some reason, just GetKeyState() doesn't seem to be fast enough to display on screen (from initial debugging)
+
+    - Win32 documentation suggests checking if the key is pressed with 'GetKeyState() & 0x8000',
+      where the 0 is implicitly evaluated to a boolean, but in Rust you can't legally make that comparison
+      without an int cast and then adding '!= 0'. So, I simplified it to '== -32737', which does the same thing.
+        > Reference: https://docs.microsoft.com/en-us/windows/win32/learnwin32/keyboard-input#keyboard-state
+
+*/
+pub struct KeyboardListener;
+
+impl KeyboardListener
+{
     fn get_keyboard_state() -> Result<[u8; 256], KeyboardReadError> {
-        let mut keyboard_state = [0u8; 256];
         unsafe {
+            let mut keyboard_state = [0u8; 256];
             if bool::from(GetKeyboardState(&mut keyboard_state)) {
                 return Ok(keyboard_state);
             }
+            
+            Err(KeyboardReadError)
         }
-
-        Err(KeyboardReadError)
     }
 
-    pub fn get_keys() -> Result<Vec<char>, KeyboardReadError> {
-        let mut keys: Vec<char> = Vec::new();
-        let keyboard_state = KeyLogger::get_keyboard_state()?;
+    /*
+        Translate from C++:
+        HKL keyboard_layout = LoadKeyboardLayout("00000409", KLF_ACTIVATE);
+        SHORT virtual_key_code = VkKeyScanEx(key, keyboard_layout);
+        return GetAsyncKeyState(virtual_key_code) & 0x8000;
+    */
+    pub fn is_pressed(key: char) -> bool {
+        unsafe{
+            let virtual_key_code = key as i32; //VkKeyScanA(key as CHAR);
+            GetAsyncKeyState(virtual_key_code) == -32767
+        }
+    }
+
+    /*
+    
+    */
+    pub fn pressed_keys() -> Vec<char> {
+        let mut pressed_keys = Vec::new();
 
         unsafe {
-            for i in 0..256 {
-                //TODO: check if higher order bit is set using bit mask
-                if keyboard_state[i] & ___ != 0 {  
-                    keys.push(char::from(i as u8));  //TODO: 'ToUnicode'
+            for virtual_key_code in 0..256 {
+                    if GetAsyncKeyState(virtual_key_code) == -32767 { 
+                        pressed_keys.push(virtual_key_code as u8 as char); 
+                    }
                 }
             }
-        }
-        
-        Ok(keys)
+
+        pressed_keys
     }
 }
 
 
 /* 
     Implementation of 'KeyboardReadError', used when the Win32 API
-    throws an error when calling 'GetKeyboardState'
+    cannot return the state of the key(board)
 */
 pub struct KeyboardReadError;
 
