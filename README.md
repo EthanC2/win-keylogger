@@ -14,9 +14,9 @@ individual characters. That way, regexs can be applied to parse for emails,
 passwords, etc.
 # To-do
 1. Rework `get_keyboard_state()` to be asynchonous (maybe make keyboard_state a part of the 'KeyLogger' struct?)
-2. Make 'keyboard_state' from 'KeyLogger.get_keyboard_state' a byte array 
 instead of [u8; 256];
-3. Add error strings to 'KeyboardReadError' via Windows API function 'FormatMessage'
+2. Add error strings for error codes to 'KeyboardReadError' via Windows API function 'FormatMessage'
+. WHY GOD DO YOU HATE ME. ADDING "Win32_System_Diagnostics_Debug" SHOULD INVALIDATE OTHER IMPORTS.
 
 # Windows API Reference Links
 - [Overview: Keyboard and Mouse Input Functions](https://docs.microsoft.com/en-us/windows/win32/api/_inputdev/)
