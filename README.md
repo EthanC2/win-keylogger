@@ -24,7 +24,8 @@ instead of [u8; 256];
 - [GetLastError()](https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
 - [FormatEssage()](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessage)
 - [Table of Virtual Keycodes](https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)
-
+- [MapVirtualKeyW()](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw)
+- [ToUnicode()](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-tounicode)
 # Implementation References
 - [YXL76's keyboard_query crate](https://github.com/YXL76/keyboard_query/blob/master/src/lib.rs)
 - [Deadblackclover's keylogger](https://github.com/deadblackclover/keylogger/blob/master/src/keylogger.rs)
