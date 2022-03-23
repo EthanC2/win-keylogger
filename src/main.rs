@@ -4,9 +4,29 @@ use keyboard_listener::{KeyboardListener};
 fn main() {
     println!("Starting!");
     loop {
-        //println!("{:?}", KeyboardListener::pressed_keys());
-        if KeyboardListener::is_pressed('g') {
-            println!("G is pressed!");
+        let kl = KeyboardListener::new();
+        let keys = kl.pressed_keys();
+    
+        if !keys.is_empty() {
+            println!("{:?}", keys);
         }
+
+        /*
+        if KeyboardListener::is_pressed('a') {
+            println!("a is pressed!");
+        }
+
+        if KeyboardListener::is_pressed('b') {
+            println!("b is pressed!");
+        }
+
+        if KeyboardListener::is_pressed('z') {
+            println!("z is pressed!");
+        }
+
+        if KeyboardListener::is_pressed('A') {
+            println!("A is pressed!");
+        }
+        */
     }
 }
